@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <title>message</title>
+  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" media="screen" title="no title" charset="utf-8" />
+  <script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="https://raw.github.com/wycats/handlebars.js/1.0.0-rc.3/dist/handlebars.js" type="text/javascript" charset="utf-8"></script>
+  <style type="text/css" media="screen">
+  body{
+    margin-top: 50px;
+  }
+  </style>
+</head>
+<body>
+  <script id="messages-template" type="text/x-handlebars-template">
+  <div class="well">
+  {{Name}}:{{Message}}
+  </div>
+  </script>
+  <div class="container">
+    <div id="messages">
+    
+    </div>
+  
+    <div>
+      <form id="new_message">
+        <fieldset>
+          <legend>说点什么吧</legend>
+          <label>你的名字</label>
+          <input type="text" placeholder="你的名字" name="name" id="name">
+          <br>
+          <textarea rows="3" name="message" id="message"></textarea><br>
+          <button type="submit" class="btn">Submit</button>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+  
+  
+  <script type="text/javascript" charset="utf-8">
+  var source   = $("#messages-template").html();
+  var template = Handlebars.compile(source);
+  
+  $.getJSON("/messages.json", function(data){
+    for(var i = 0; i < data.length; i++) {
+      var html    = template(data[i]);
+      $("#messages").append(html)
+    }
+  })
+  
+  $("#new_message").on("submit", function(){
+    var name = $("#name").val()
+    var message = $("#message").val()
+    $.post("/messages.json", {"Name": name, "Message": message}, function(data){
+      var html = template(data)
+      $("#messages").append(html)
+    }, "json")
+    return false
+  })
+  
+  </script>
+</body>
+</html>
